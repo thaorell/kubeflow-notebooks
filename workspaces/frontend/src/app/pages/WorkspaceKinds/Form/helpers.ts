@@ -107,6 +107,7 @@ export const emptyPodConfig: WorkspacePodConfigValue = {
 
 export const EMPTY_WORKSPACE_KIND_FORM_DATA = {
   properties: {
+    name: '',
     displayName: '',
     description: '',
     deprecated: false,

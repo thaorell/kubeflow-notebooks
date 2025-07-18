@@ -46,6 +46,7 @@ export interface WorkspaceCountPerOption {
 }
 
 export interface WorkspaceKindProperties {
+  name: string;
   displayName: string;
   description: string;
   deprecated: boolean;
