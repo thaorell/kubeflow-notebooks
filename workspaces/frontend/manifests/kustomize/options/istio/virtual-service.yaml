@@ -6,15 +6,15 @@ spec:
   hosts:
     - "*"
   gateways:
-    - kubeflow-gateway
+    - kubeflow/kubeflow-gateway
   http:
     - match:
         - uri:
-            prefix: /notebooks
+            prefix: /workspaces
       rewrite:
         uri: "/"
       route:
         - destination:
-            host: nb-frontend.kubeflow-system.svc.cluster.local
+            host: nb-frontend.workspace-controller-system.svc.cluster.local
             port:
               number: 8080
