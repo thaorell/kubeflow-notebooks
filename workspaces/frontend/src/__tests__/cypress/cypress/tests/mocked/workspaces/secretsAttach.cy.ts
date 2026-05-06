@@ -7,6 +7,7 @@ import {
   buildMockSecret,
   buildMockWorkspace,
   buildMockWorkspaceKind,
+  buildMockWorkspaceKindUpdate,
   buildMockWorkspaceKindInfo,
   buildMockWorkspaceUpdateFromWorkspace,
 } from '~/shared/mock/mockBuilder';
@@ -55,11 +56,17 @@ describe('SecretsAttachModal', () => {
       mockModArchResponse(mockWorkspaceUpdate),
     ).as('getWorkspace');
 
-    cy.intercept(
-      'GET',
-      `/api/${NOTEBOOKS_API_VERSION}/workspacekinds/${mockWorkspaceKindInfo.name}`,
-      mockModArchResponse(mockWorkspaceKindFull),
+    cy.interceptApi(
+      'GET /api/:apiVersion/workspacekinds/:kind',
+      { path: { apiVersion: NOTEBOOKS_API_VERSION, kind: mockWorkspaceKindInfo.name } },
+      mockModArchResponse(buildMockWorkspaceKindUpdate(mockWorkspaceKindFull)),
     ).as('getWorkspaceKind');
+
+    cy.interceptApi(
+      'GET /api/:apiVersion/workspacekinds',
+      { path: { apiVersion: NOTEBOOKS_API_VERSION } },
+      mockModArchResponse([mockWorkspaceKindFull]),
+    ).as('getWorkspaceKinds');
 
     cy.intercept('GET', `/api/${NOTEBOOKS_API_VERSION}/secrets/${mockNamespace.name}`, {
       data: mockSecrets,

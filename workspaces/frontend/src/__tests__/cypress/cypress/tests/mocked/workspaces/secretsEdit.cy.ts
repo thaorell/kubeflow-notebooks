@@ -11,6 +11,7 @@ import {
   buildMockSecret,
   buildMockWorkspace,
   buildMockWorkspaceKind,
+  buildMockWorkspaceKindUpdate,
   buildMockWorkspaceKindInfo,
   buildMockWorkspaceUpdateFromWorkspace,
 } from '~/shared/mock/mockBuilder';
@@ -94,8 +95,14 @@ describe('Edit Secret Modal', () => {
     cy.interceptApi(
       'GET /api/:apiVersion/workspacekinds/:kind',
       { path: { apiVersion: NOTEBOOKS_API_VERSION, kind: mockWorkspaceKindInfo.name } },
-      mockModArchResponse(mockWorkspaceKindFull),
+      mockModArchResponse(buildMockWorkspaceKindUpdate(mockWorkspaceKindFull)),
     ).as('getWorkspaceKind');
+
+    cy.interceptApi(
+      'GET /api/:apiVersion/workspacekinds',
+      { path: { apiVersion: NOTEBOOKS_API_VERSION } },
+      mockModArchResponse([mockWorkspaceKindFull]),
+    ).as('getWorkspaceKinds');
 
     cy.interceptApi(
       'GET /api/:apiVersion/secrets/:namespace',

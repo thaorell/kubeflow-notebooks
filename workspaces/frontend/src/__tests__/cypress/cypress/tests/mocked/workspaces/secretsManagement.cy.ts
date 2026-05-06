@@ -11,6 +11,7 @@ import {
   buildMockSecret,
   buildMockWorkspace,
   buildMockWorkspaceKind,
+  buildMockWorkspaceKindUpdate,
   buildMockWorkspaceKindInfo,
   buildMockWorkspaceUpdateFromWorkspace,
 } from '~/shared/mock/mockBuilder';
@@ -61,12 +62,17 @@ describe('Secrets Expandable Key/Value Pairs', () => {
       mockModArchResponse(mockWorkspaceUpdate),
     ).as('getWorkspace');
 
-    // Intercept workspace kind GET (needed for edit form)
-    cy.intercept(
-      'GET',
-      `/api/${NOTEBOOKS_API_VERSION}/workspacekinds/${mockWorkspaceKindInfo.name}`,
-      mockModArchResponse(mockWorkspaceKindFull),
+    cy.interceptApi(
+      'GET /api/:apiVersion/workspacekinds/:kind',
+      { path: { apiVersion: NOTEBOOKS_API_VERSION, kind: mockWorkspaceKindInfo.name } },
+      mockModArchResponse(buildMockWorkspaceKindUpdate(mockWorkspaceKindFull)),
     ).as('getWorkspaceKind');
+
+    cy.interceptApi(
+      'GET /api/:apiVersion/workspacekinds',
+      { path: { apiVersion: NOTEBOOKS_API_VERSION } },
+      mockModArchResponse([mockWorkspaceKindFull]),
+    ).as('getWorkspaceKinds');
 
     // Intercept list secrets API (called when secrets section loads)
     cy.intercept('GET', `/api/${NOTEBOOKS_API_VERSION}/secrets/${mockNamespace.name}`, {
@@ -204,8 +210,14 @@ describe('Secrets Management - Attach Modal', () => {
     cy.interceptApi(
       'GET /api/:apiVersion/workspacekinds/:kind',
       { path: { apiVersion: NOTEBOOKS_API_VERSION, kind: mockWorkspaceKindInfo.name } },
-      mockModArchResponse(mockWorkspaceKindFull),
+      mockModArchResponse(buildMockWorkspaceKindUpdate(mockWorkspaceKindFull)),
     ).as('getWorkspaceKind');
+
+    cy.interceptApi(
+      'GET /api/:apiVersion/workspacekinds',
+      { path: { apiVersion: NOTEBOOKS_API_VERSION } },
+      mockModArchResponse([mockWorkspaceKindFull]),
+    ).as('getWorkspaceKinds');
 
     cy.interceptApi(
       'GET /api/:apiVersion/secrets/:namespace',

@@ -8,6 +8,7 @@ import {
   buildMockPVC,
   buildMockWorkspace,
   buildMockWorkspaceKind,
+  buildMockWorkspaceKindUpdate,
   buildMockWorkspaceKindInfo,
   buildMockWorkspaceUpdate,
 } from '~/shared/mock/mockBuilder';
@@ -258,7 +259,7 @@ describe('Summary step', () => {
       cy.interceptApi(
         'GET /api/:apiVersion/workspacekinds/:kind',
         { path: { apiVersion: NOTEBOOKS_API_VERSION, kind: WORKSPACE_KIND_NAME } },
-        mockModArchResponse(mockWorkspaceKind),
+        mockModArchResponse(buildMockWorkspaceKindUpdate(mockWorkspaceKind)),
       ).as('getWorkspaceKind');
     };
 

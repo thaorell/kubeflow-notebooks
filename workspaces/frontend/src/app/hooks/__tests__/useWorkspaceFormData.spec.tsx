@@ -5,6 +5,7 @@ import { NotebookApis } from '~/shared/api/notebookApi';
 import {
   buildMockWorkspace,
   buildMockWorkspaceKind,
+  buildMockWorkspaceKindUpdate,
   buildMockWorkspaceUpdateFromWorkspace,
 } from '~/shared/mock/mockBuilder';
 
@@ -46,7 +47,10 @@ describe('useWorkspaceFormData', () => {
       ok: true,
       data: mockWorkspaceUpdate,
     });
-    const getWorkspaceKind = jest.fn().mockResolvedValue({ ok: true, data: mockWorkspaceKind });
+    const mockWorkspaceKindUpdateData = buildMockWorkspaceKindUpdate(mockWorkspaceKind);
+    const getWorkspaceKind = jest
+      .fn()
+      .mockResolvedValue({ ok: true, data: mockWorkspaceKindUpdateData });
 
     const api = {
       workspaces: { getWorkspace },
@@ -63,7 +67,7 @@ describe('useWorkspaceFormData', () => {
       useWorkspaceFormData({
         namespace: 'ns',
         workspaceName: 'My First Jupyter Notebook',
-        workspaceKindName: 'wk',
+        workspaceKindName: mockWorkspaceKind.name,
       }),
     );
     await waitForNextUpdate();
@@ -77,8 +81,12 @@ describe('useWorkspaceFormData', () => {
           isAttached: true,
         }
       : undefined;
-    expect(workspaceFormData).toEqual({
-      kind: mockWorkspaceKind,
+    expect(workspaceFormData.kind?.name).toEqual(mockWorkspaceKind.name);
+    expect(workspaceFormData.kind?.displayName).toEqual(mockWorkspaceKind.displayName);
+    expect(workspaceFormData.kind?.podTemplate.options.imageConfig.default).toEqual(
+      mockWorkspaceKind.podTemplate.options.imageConfig.default,
+    );
+    expect(workspaceFormData).toMatchObject({
       imageConfig: mockWorkspace.podTemplate.options.imageConfig.current.id,
       podConfig: mockWorkspace.podTemplate.options.podConfig.current.id,
       properties: {

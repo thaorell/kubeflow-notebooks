@@ -9,6 +9,7 @@ import {
   buildMockNamespace,
   buildMockWorkspace,
   buildMockWorkspaceKind,
+  buildMockWorkspaceKindUpdate,
   buildMockWorkspaceKindInfo,
   buildMockWorkspaceUpdate,
 } from '~/shared/mock/mockBuilder';
@@ -114,7 +115,7 @@ const setupEditWorkspace = (): EditWorkspaceSetup => {
   cy.interceptApi(
     'GET /api/:apiVersion/workspacekinds/:kind',
     { path: { apiVersion: NOTEBOOKS_API_VERSION, kind: WORKSPACE_KIND_NAME } },
-    mockModArchResponse(mockWorkspaceKind),
+    mockModArchResponse(buildMockWorkspaceKindUpdate(mockWorkspaceKind)),
   ).as('getWorkspaceKind');
 
   cy.interceptApi(
@@ -376,7 +377,7 @@ describe('Edit workspace', () => {
       cy.interceptApi(
         'GET /api/:apiVersion/workspacekinds/:kind',
         { path: { apiVersion: NOTEBOOKS_API_VERSION, kind: WORKSPACE_KIND_NAME } },
-        mockModArchResponse(mockWorkspaceKind),
+        mockModArchResponse(buildMockWorkspaceKindUpdate(mockWorkspaceKind)),
       ).as('getWorkspaceKind');
       cy.interceptApi(
         'GET /api/:apiVersion/workspacekinds',
