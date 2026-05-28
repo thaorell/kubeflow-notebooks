@@ -1,3 +1,5 @@
+import { DEV_MODE } from '~/shared/utilities/const';
+
 export const AppRoutePaths = {
   root: '/',
   workspaces: '/workspaces',
@@ -7,7 +9,7 @@ export const AppRoutePaths = {
   workspaceKindSummary: '/workspacekinds/:kind/summary',
   workspaceKindCreate: '/workspacekinds/create',
   workspaceKindEdit: '/workspacekinds/:kind/edit',
-  notebookDebugSettings: '/notebookDebugSettings',
+  notebookDebugSettings: DEV_MODE ? '/notebookDebugSettings' : '/',
 } satisfies Record<string, `/${string}`>;
 
 export type AppRoute = (typeof AppRoutePaths)[keyof typeof AppRoutePaths];

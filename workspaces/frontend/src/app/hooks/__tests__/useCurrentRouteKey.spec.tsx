@@ -13,7 +13,13 @@ describe('useCurrentRouteKey', () => {
   const fillParams = (pattern: string) => pattern.replace(/:([^/]+)/g, 'test');
   const cases: ReadonlyArray<readonly [string, AppRouteKey]> = (
     Object.entries(AppRoutePaths) as [AppRouteKey, string][]
-  ).map(([key, pattern]) => [fillParams(pattern), key]);
+  ).reduce<[string, AppRouteKey][]>((acc, [key, pattern]) => {
+    const path = fillParams(pattern);
+    if (!acc.some(([p]) => p === path)) {
+      acc.push([path, key]);
+    }
+    return acc;
+  }, []);
 
   it.each(cases)('matches route keys by path: %s', (path, expected) => {
     const { result } = renderHook(() => useCurrentRouteKey(), {
