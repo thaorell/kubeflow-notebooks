@@ -37,45 +37,6 @@ import (
 	_ "github.com/kubeflow/notebooks/workspaces/backend/openapi"
 )
 
-const (
-	Version    = "1.0.0"
-	PathPrefix = "/api/v1"
-
-	MediaTypeJson = "application/json"
-	MediaTypeYaml = "application/yaml"
-
-	NamespacePathParam    = "namespace"
-	ResourceNamePathParam = "name"
-
-	// healthcheck
-	HealthCheckPath = PathPrefix + "/healthcheck"
-
-	// user
-	UserPath = PathPrefix + "/user"
-
-	// workspaces
-	AllWorkspacesPath         = PathPrefix + "/workspaces"
-	WorkspacesByNamespacePath = AllWorkspacesPath + "/:" + NamespacePathParam
-	WorkspacesByNamePath      = AllWorkspacesPath + "/:" + NamespacePathParam + "/:" + ResourceNamePathParam
-	WorkspaceActionsPath      = WorkspacesByNamePath + "/actions"
-	PauseWorkspacePath        = WorkspaceActionsPath + "/pause"
-
-	// workspacekinds
-	AllWorkspaceKindsPath    = PathPrefix + "/workspacekinds"
-	WorkspaceKindsByNamePath = AllWorkspaceKindsPath + "/:" + ResourceNamePathParam
-
-	// namespaces
-	AllNamespacesPath = PathPrefix + "/namespaces"
-
-	// secrets
-	SecretsByNamespacePath = PathPrefix + "/secrets/:" + NamespacePathParam
-	SecretsByNamePath      = SecretsByNamespacePath + "/:" + ResourceNamePathParam
-
-	// swagger
-	SwaggerPath    = PathPrefix + "/swagger/*any"
-	SwaggerDocPath = PathPrefix + "/swagger/doc.json"
-)
-
 type App struct {
 	Config               *config.EnvConfig
 	logger               *slog.Logger
@@ -131,7 +92,7 @@ func (a *App) Routes() http.Handler {
 	router.GET(constants.HealthCheckPath, a.GetHealthcheckHandler)
 
 	// user
-	router.GET(UserPath, a.GetUserHandler)
+	router.GET(constants.UserPath, a.GetUserHandler)
 
 	// namespaces
 	router.GET(constants.AllNamespacesPath, a.GetNamespacesHandler)
@@ -181,13 +142,14 @@ func (a *App) Routes() http.Handler {
 
 	mux := http.NewServeMux()
 
-	mux.Handle(PathPrefix+"/", a.recoverPanic(a.enableCORS(handler)))
+	mux.Handle(constants.PathPrefix+"/", a.recoverPanic(a.enableCORS(handler)))
 
 	if a.Config.StaticAssetsDir != "" {
 		staticDir := http.Dir(a.Config.StaticAssetsDir)
 		fileServer := http.FileServer(staticDir)
 		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			if _, err := staticDir.Open(r.URL.Path); err == nil {
+			if f, err := staticDir.Open(r.URL.Path); err == nil {
+				_ = f.Close()
 				a.logger.Debug("Serving static file", slog.String("path", r.URL.Path))
 				fileServer.ServeHTTP(w, r)
 				return
