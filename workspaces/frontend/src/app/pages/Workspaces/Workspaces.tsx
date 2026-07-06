@@ -41,7 +41,7 @@ export const Workspaces: React.FunctionComponent = () => {
     return <LoadError title="Failed to load workspaces" error={workspacesLoadError} />;
   }
 
-  if (!namespacesLoaded) {
+  if (!workspacesLoaded || !namespacesLoaded || selectedNamespace === '') {
     return <LoadingSpinner />;
   }
 
@@ -59,17 +59,7 @@ export const Workspaces: React.FunctionComponent = () => {
               </Content>
             </FlexItem>
             <FlexItem>
-              <Flex
-                alignItems={{ default: 'alignItemsCenter' }}
-                spaceItems={{ default: 'spaceItemsSm' }}
-              >
-                <FlexItem>
-                  <Content component={ContentVariants.small}>Project</Content>
-                </FlexItem>
-                <FlexItem>
-                  <NamespaceSelector />
-                </FlexItem>
-              </Flex>
+              <NamespaceSelector />
             </FlexItem>
           </Flex>
         </StackItem>
@@ -79,19 +69,13 @@ export const Workspaces: React.FunctionComponent = () => {
           </Content>
         </StackItem>
         <StackItem isFilled>
-          {!selectedNamespace ? (
-            <Content component={ContentVariants.p}>Select a project to view workspaces.</Content>
-          ) : !workspacesLoaded ? (
-            <LoadingSpinner />
-          ) : (
-            <WorkspaceTable
-              workspaces={workspaces}
-              rowActions={tableRowActions}
-              namespace={selectedNamespace}
-              hiddenColumns={['namespace', 'gpu', 'idleGpu']}
-              refreshWorkspaces={refreshWorkspaces}
-            />
-          )}
+          <WorkspaceTable
+            workspaces={workspaces}
+            rowActions={tableRowActions}
+            namespace={selectedNamespace}
+            hiddenColumns={['namespace', 'gpu', 'idleGpu']}
+            refreshWorkspaces={refreshWorkspaces}
+          />
         </StackItem>
       </Stack>
     </PageSection>
